@@ -1,0 +1,62 @@
+﻿# 把作品集以静态导出方式发布到 GitHub Pages。
+#
+# 只有本工作流会开启静态导出（NEXT_PUBLIC_STATIC_EXPORT=1）；
+# 你本地双击“启动作品集.cmd”的开发服务器与 Cloudflare Worker 构建完全不受影响。
+#
+# 仓库子路径会自动适配：NEXT_PUBLIC_BASE_PATH 取自仓库名，
+# 所以仓库叫 portfolio 时站点就是 https://<用户名>.github.io/portfolio/。
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build static export
+        env:
+          NEXT_PUBLIC_STATIC_EXPORT: "1"
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+        run: pnpm build:pages
+
+      - name: Disable Jekyll processing
+        run: touch out/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
