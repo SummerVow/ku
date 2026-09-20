@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI 项目推进助手 · 本地原型</title>
+    <style>
+      :root {
+        --ink: #0f1d33;
+        --ink-soft: rgba(15, 29, 51, 0.68);
+        --ink-faint: rgba(15, 29, 51, 0.46);
+        --line: rgba(15, 29, 51, 0.12);
+        --paper: #f7f8fb;
+        --card: #ffffff;
+        --ocean: #2f5fd0;
+        --ocean-soft: rgba(47, 95, 208, 0.08);
+        --ok: #1d8f6f;
+        --warn: #b0741a;
+        --guard: #b3382f;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font: 15px/1.65 "Helvetica Neue", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      }
+      main { max-width: 1080px; margin: 0 auto; padding: 22px 20px 40px; }
+      .top {
+        display: flex; flex-wrap: wrap; gap: 10px 14px;
+        align-items: baseline; justify-content: space-between;
+        padding-bottom: 12px; border-bottom: 1px solid var(--line);
+      }
+      .top h1 { margin: 0; font-size: 17px; letter-spacing: 0.2px; }
+      .badge {
+        display: inline-block; margin-left: 8px; padding: 2px 8px;
+        border-radius: 999px; background: var(--ocean-soft); color: var(--ocean);
+        font-size: 11.5px; font-weight: 700; vertical-align: 2px;
+      }
+      .top p { margin: 0; font-size: 12.5px; color: var(--ink-faint); }
+      .modes { display: flex; gap: 6px; }
+      .modes button {
+        font: inherit; font-size: 12.5px; padding: 5px 12px; cursor: pointer;
+        border: 1px solid var(--line); border-radius: 999px;
+        background: #fff; color: var(--ink-soft);
+      }
+      .modes button[aria-pressed="true"] {
+        background: var(--ink); border-color: var(--ink); color: #fff; font-weight: 700;
+      }
+      .layout {
+        display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+        gap: 16px; margin-top: 16px; align-items: start;
+      }
+      .panel {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: 14px; padding: 16px;
+      }
+      .panel > header {
+        display: flex; align-items: baseline; justify-content: space-between;
+        gap: 10px; margin-bottom: 12px;
+      }
+      .panel h2 { margin: 0; font-size: 14px; }
+      .panel header small { font-size: 11.5px; color: var(--ink-faint); }
+      .examples { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+      .examples button {
+        font: inherit; font-size: 12px; padding: 5px 10px; cursor: pointer;
+        border: 1px dashed var(--line); border-radius: 8px;
+        background: transparent; color: var(--ink-soft); text-align: left;
+      }
+      .examples button:hover { border-style: solid; border-color: var(--ocean); color: var(--ocean); }
+      .log {
+        height: 340px; overflow-y: auto; padding: 4px 2px;
+        display: flex; flex-direction: column; gap: 10px;
+      }
+      .msg { max-width: 92%; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; }
+      .msg pre { margin: 0; font: inherit; white-space: pre-wrap; word-break: break-word; }
+      .msg.user { align-self: flex-end; background: var(--ink); color: #fff; }
+      .msg.assistant { align-self: flex-start; background: var(--ocean-soft); }
+      .msg.tag-ok { background: rgba(29, 143, 111, 0.1); }
+      .msg.tag-warn { background: rgba(176, 116, 26, 0.12); }
+      .msg.tag-guard { background: rgba(179, 56, 47, 0.1); }
+      .msg .tag {
+        display: block; margin-bottom: 5px; font-size: 11px; font-weight: 700;
+        letter-spacing: 0.4px; color: var(--ink-faint);
+      }
+      .msg.tag-ok .tag { color: var(--ok); }
+      .msg.tag-warn .tag { color: var(--warn); }
+      .msg.tag-guard .tag { color: var(--guard); }
+      form.composer { display: flex; gap: 8px; margin-top: 12px; }
+      textarea {
+        flex: 1; min-height: 62px; resize: vertical; font: inherit; font-size: 13.5px;
+        padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
+        background: #fff; color: var(--ink);
+      }
+      textarea:focus-visible { outline: 2px solid var(--ocean); outline-offset: 1px; }
+      .send {
+        align-self: flex-end; font: inherit; font-size: 13.5px; font-weight: 700;
+        padding: 10px 18px; border: 1px solid var(--ocean); border-radius: 10px;
+        background: var(--ocean); color: #fff; cursor: pointer;
+      }
+      .send:disabled { opacity: 0.5; cursor: not-allowed; }
+      .counter { margin-top: 6px; font-size: 12px; color: var(--ink-faint); }
+      .stepbar { display: flex; gap: 6px; margin-bottom: 12px; }
+      .stepbar div {
+        flex: 1; padding: 6px 4px; border-radius: 8px; text-align: center;
+        font-size: 11.5px; background: rgba(15, 29, 51, 0.05); color: var(--ink-faint);
+      }
+      .stepbar div.on { background: var(--ocean); color: #fff; font-weight: 700; }
+      .stepbar div.done { background: rgba(47, 95, 208, 0.16); color: var(--ocean); font-weight: 700; }
+      .count { font-size: 26px; font-weight: 800; letter-spacing: 0.5px; }
+      .count small { font-size: 13px; font-weight: 600; color: var(--ink-faint); }
+      .decision { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 14px; }
+      .decision span {
+        font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px;
+        background: rgba(15, 29, 51, 0.06); color: var(--ink-soft);
+      }
+      .decision span.ready { background: rgba(29, 143, 111, 0.14); color: var(--ok); }
+      .decision span.need { background: rgba(176, 116, 26, 0.16); color: var(--warn); }
+      ul.facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+      ul.facts li {
+        display: grid; grid-template-columns: 12px 1fr auto; gap: 8px;
+        align-items: start; padding: 7px 9px; border-radius: 9px;
+        background: rgba(15, 29, 51, 0.035); font-size: 12.5px;
+      }
+      ul.facts i { width: 8px; height: 8px; margin-top: 6px; border-radius: 999px; background: var(--ink-faint); }
+      ul.facts li.state-已识别 i, ul.facts li.state-已经确认 i { background: var(--ocean); }
+      ul.facts li.state-已经确认 i { background: var(--ok); }
+      ul.facts b { font-weight: 700; }
+      ul.facts b + span { display: block; color: var(--ink-soft); margin-top: 2px; }
+      ul.facts em {
+        font-style: normal; font-size: 11px; font-weight: 700;
+        color: var(--ink-soft); background: rgba(15, 29, 51, 0.07);
+        padding: 2px 7px; border-radius: 999px; white-space: nowrap;
+      }
+      .plan { margin-top: 14px; border-top: 1px dashed var(--line); padding-top: 12px; }
+      .plan h3 { margin: 0 0 6px; font-size: 13px; }
+      .plan ol { margin: 0; padding-left: 18px; font-size: 12.5px; color: var(--ink-soft); }
+      .plan li { margin-bottom: 4px; }
+      .notice {
+        margin-top: 12px; padding: 10px 12px; border-radius: 10px; font-size: 12.5px;
+        background: rgba(15, 29, 51, 0.04); color: var(--ink-soft);
+      }
+      .live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+      footer {
+        margin-top: 18px; font-size: 12px; color: var(--ink-faint); line-height: 1.7;
+      }
+      @media (max-width: 860px) {
+        .layout { grid-template-columns: minmax(0, 1fr); }
+        .log { height: 300px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="top">
+        <div>
+          <h1>AI 项目推进助手<span class="badge">本地原型</span></h1>
+          <p>从一句模糊延期，到六类事实确认与有据处置动作</p>
+        </div>
+        <div class="modes" role="group" aria-label="运行模式">
+          <button type="button" id="mode-real" aria-pressed="true">真实工作流</button>
+          <button type="button" id="mode-demo" aria-pressed="false">演示模式</button>
+        </div>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-labelledby="chat-title">
+          <header>
+            <h2 id="chat-title">对话区</h2>
+            <small id="mode-note">真实工作流未配置 · 仅本地规则引擎</small>
+          </header>
+          <div class="examples" id="examples"></div>
+          <div class="log" id="log" role="log" aria-live="polite" aria-label="对话记录"></div>
+          <form class="composer" id="composer">
+            <label class="live" for="composer-input">输入项目情况</label>
+            <textarea
+              id="composer-input"
+              maxlength="600"
+              placeholder="例如：我们的 AI 客服项目延期了，帮我推进一下。"
+            ></textarea>
+            <button class="send" type="submit" id="send">发送</button>
+          </form>
+          <div class="counter"><span id="char-count">0</span> / 600 字 · 仅在当前页面使用，不上传、不保存</div>
+        </section>
+
+        <aside class="panel" aria-labelledby="state-title">
+          <header>
+            <h2 id="state-title">实时状态</h2>
+            <small>六类事实门禁</small>
+          </header>
+          <div class="stepbar" id="stepbar">
+            <div data-step="1">1 收集信息</div>
+            <div data-step="2">2 核验事实</div>
+            <div data-step="3">3 调用工作流</div>
+            <div data-step="4">4 输出处置</div>
+          </div>
+          <p class="count"><span id="identified">0</span><small> / 6 类事实</small></p>
+          <div class="decision">
+            <span id="mode-chip">真实工作流</span>
+            <span id="decision">NEED_MORE</span>
+            <span id="confirm-status">待补充</span>
+            <span id="call-status">尚未满足条件</span>
+          </div>
+          <ul class="facts" id="facts"></ul>
+          <div class="plan" id="plan" hidden></div>
+          <p class="notice" id="notice">
+            本原型不配置工作流 ID 与令牌，因此确认后不会返回处置结果，也不会伪造结果。
+          </p>
+        </aside>
+      </div>
+
+      <footer>
+        本地原型：六类事实的识别由确定性规则完成，不依赖大模型判断，也不调用任何外部服务。<br />
+        这里没有真实用户测试数据；处置方案需要由人来确认责任与时间点。
+      </footer>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ---------------- 六类事实定义与追问顺序 ---------------- */
+
+        var FACT_ORDER = ["goal", "status", "blocker", "owner", "timeline", "actionTaken"];
+        var FACT_LABELS = {
+          goal: "项目目标",
+          status: "当前状态",
+          blocker: "阻塞证据",
+          owner: "责任角色",
+          timeline: "时间影响",
+          actionTaken: "已采取动作",
+        };
+        var ASK_TEXT = {
+          goal: "第一个需要确认的是项目目标：这个项目原计划在什么时间、向谁交付什么？",
+          status: "请补充当前状态：目前具体出现了什么现象？如果有数量或范围，请一并说明。",
+          blocker: "请补充阻塞证据：是哪一个环节卡住了？有没有可以回指的记录，例如联调记录、日志、文档差异？",
+          owner: "请补充责任角色：哪一方负责哪一项具体任务？",
+          timeline: "请补充时间影响：问题不解决，会在什么时间点造成什么后果？",
+          actionTaken: "最后请补充已采取动作：目前已经做了什么？",
+        };
+
+        /* ---------------- 确定性抽取规则（与规则引擎同构） ---------------- */
+
+        function splitSegments(text) {
+          var out = [];
+          String(text || "").replace(/\r\n/g, "\n").split("\n").forEach(function (line) {
+            line.split(/(?<=[。！？!?；;])\s*/).forEach(function (chunk) {
+              var s = chunk.replace(/^[。；;，,\s]+/, "").trim();
+              if (s) out.push(s);
+            });
+          });
+          return out;
+        }
+
+        function detectGoal(seg) {
+          if (!/目标/.test(seg) && !/旨在|为了|计划于|力争/.test(seg)) return false;
+          return /开放|上线|发布|交付|完成|试点|试用|达成|里程碑|版本|验收|推广|切换/.test(seg);
+        }
+        function detectStatus(seg) {
+          if (!/写入失败|写入异常|无法映射|映射失败|报错|失败|卡住|阻塞|延期|滞后|积压|异常|未通过|不可用|停摆|中断|不一致|缺口/.test(seg))
+            return false;
+          var quantity = /\d+\s*(条|个|张|份|次|人|台|笔|万|%|％)/.test(seg) ||
+            /[一二三四五六七八九十百千]+\s*(条|个|张|份|次|人|台|笔)/.test(seg);
+          return quantity || /失败|报错|异常|阻塞|无法|卡住/.test(seg);
+        }
+        function detectBlocker(seg) {
+          if (!/无法|失败|不一致|报错|异常|阻塞|缺失|未提供|冲突|不匹配/.test(seg)) return false;
+          var source = /记录|日志|截图|报告|样本|清单|文档/.test(seg);
+          var object = /接口|字段|文档|记录|日志|权限|环境|配置|依赖|需求|数据|清单|版本|联调/.test(seg);
+          return source || object;
+        }
+        function detectOwner(seg) {
+          if (!/负责人|责任人|经理|主管|组长|团队|部门|开发|研发|产品|测试|运维|设计|运营|客服|业务方|供应商|厂商|同事/.test(seg))
+            return false;
+          // 必须出现「角色 + 任务性动词」的分工结构：只说「某团队一直没给字段表」不是事实
+          if (!/负责|承担|跟进|牵头|对接|确认|更新|重新测试|验证|提供|落实|推进|配合/.test(seg)) return false;
+          return /[\u4e00-\u9fa5A-Za-z0-9]{2,20}?(负责|承担|牵头|跟进|对接|确认|更新|重新测试|验证|提供|落实|推进|配合)/.test(seg);
+        }
+        function detectTimeline(seg) {
+          var date = /\d{1,4}\s*月\s*\d{1,2}\s*[日号]|\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}\s*月\s*[上中下]旬/.test(seg);
+          if (!date) return false;
+          return /错过|延误|推迟|无法按计划|无法开始|将无法|延期|来不及|赶不上|影响.*(上线|试用|交付)|风险窗口|无法交付|不能按期|截止|最晚|不得晚于|deadline|之前|以前|前完成|前确认|前提供/.test(seg);
+        }
+        function stripConditional(seg) {
+          return seg
+            .replace(/(如果|若|一旦|假如|倘若)[^，,。；;]*[，,。；;]?/g, "")
+            .replace(/\d{1,4}\s*月\s*\d{1,2}\s*[日号]?\s*前\s*(仍|还|尚)?\s*未[^，,。；;]*/g, "");
+        }
+        function detectActionTaken(seg) {
+          if (!/已经|已|正在|召开|组织了|约定|安排|提交|提供|发送|建立|完成|进入|启动|升级|同步/.test(seg)) return false;
+          if (!/会|会议|材料|样本|清单|方案|记录|邮件|任务|工单|评审|同步|通报|升级|验证|测试|复盘/.test(seg)) return false;
+          var failed = /(测试|验证|重试|尝试|会议|评审|联调|回归|上线|发布)(仍然|仍|还是|均|都)?\s*(失败|报错|未通过)/.test(seg);
+          if (failed && !/已安排|已组织|已提交|已建立|已升级|已同步|已发送/.test(seg)) return false;
+          return true;
+        }
+
+        function extractFacts(text) {
+          var found = {};
+          splitSegments(text).forEach(function (seg) {
+            if (detectGoal(seg) && !found.goal) found.goal = seg;
+            if (detectStatus(seg) && !found.status) found.status = seg;
+            if (detectBlocker(seg) && !found.blocker) found.blocker = seg;
+            if (detectOwner(seg) && !found.owner) found.owner = seg;
+            if (detectTimeline(seg) && !found.timeline) found.timeline = seg;
+            if (detectActionTaken(stripConditional(seg)) && !found.actionTaken) found.actionTaken = seg;
+          });
+          return found;
+        }
+
+        /* ---------------- 无依据归责拦截 ---------------- */
+
+        function detectBlame(text) {
+          var t = String(text || "").trim();
+          if (!t) return { hit: false, matched: [] };
+          var matched = [];
+          var entities = t.match(/[\u4e00-\u9fa5A-Za-z0-9]{0,8}(负责人|责任人|团队|部门|小组|同事|项目经理|业务方|供应商|厂商)/g) || [];
+          t.replace(/(研发|开发|产品|测试|运维|客服|项目|技术|业务)\s*(负责人|责任人|经理|同学)/g, function (m) {
+            entities.push(m);
+            return m;
+          });
+          var capability = t.match(/能力不行|能力差|能力不足|水平不行|态度有问题|不负责任|不专业|不靠谱|消极怠工|不作为|失职|渎职|人不行|拖后腿|故意拖延|故意不配合/g);
+          if (capability) matched = matched.concat(capability);
+          var demand = t.match(/是谁的责任|谁的责任|是谁负责|是谁的问题|该谁负责|该谁承担责任|直接告诉我是谁|写成是|直接写成|认定为责任|判定为责任|就是(他|她|他们|研发|开发|产品|测试|客服)的责任/g);
+          if (demand) matched = matched.concat(demand);
+          var attribution = t.match(/承担责任|负责到底|追责|问责|甩锅|背锅|处分|处罚|扣绩效|开除|辞退|罚款|这个锅|锅应该|锅是/g);
+          if (attribution && entities.length > 0) matched = matched.concat(attribution);
+          var write = t.match(/写成|写为|写作|直接写|认定|判定|定性为?/g);
+          if (write && entities.length > 0 && /责任|过错|锅|失误|问题|导致|造成/.test(t)) matched = matched.concat(write);
+          var cause = t.match(/导致|造成|引起|致使|引发|拖累|搞砸|耽误|拖延/g);
+          if (cause && entities.length > 0 && /责任|过错|锅|失误|问题出/.test(t)) matched = matched.concat(cause);
+          var generic = /追责|问责|甩锅|背锅|锅|承担责任|负责任|处分|处罚|扣绩效/.test(t);
+          var taskAssignment = /负责[^，,。；;]*(确认|更新|提供|修复|测试|跟进|对接|推进|落实|验证)/.test(t);
+          if (generic && !taskAssignment) matched.push("归责诉求（无任务分工依据）");
+          if (/(不用|不要|别再|无需)(再)?(问|确认|核实)/.test(t) && /(写|认定|判定|定性)/.test(t))
+            matched.push("要求跳过核实直接定性");
+          return { hit: matched.length > 0, matched: matched };
+        }
+
+        /* ---------------- 会话状态 ---------------- */
+
+        function emptyFacts() {
+          return FACT_ORDER.map(function (key) {
+            return { key: key, label: FACT_LABELS[key], value: null, state: "等待补充" };
+          });
+        }
+
+        var state = {
+          facts: emptyFacts(),
+          phase: "collecting",
+          blameRejected: false,
+          mode: "real",
+          messages: [],
+        };
+
+        function identifiedCount() {
+          return state.facts.filter(function (f) { return f.state !== "等待补充"; }).length;
+        }
+        function allIdentified() {
+          return identifiedCount() === state.facts.length;
+        }
+        function decisionOf() {
+          return allIdentified() ? "READY" : "NEED_MORE";
+        }
+        function confirmStatusOf() {
+          if (!allIdentified()) return "待补充";
+          if (state.phase === "disposed") return "已确认";
+          return "待确认";
+        }
+        function callStatusOf() {
+          if (state.phase === "disposed") return "调用完成（未接入）";
+          return "尚未满足条件";
+        }
+        function currentStep() {
+          if (state.phase === "disposed") return 4;
+          if (state.phase === "awaiting_confirm") return 2;
+          return 1;
+        }
+        function nextMissing() {
+          for (var i = 0; i < FACT_ORDER.length; i += 1) {
+            var slot = state.facts.filter(function (f) { return f.key === FACT_ORDER[i]; })[0];
+            if (slot && slot.state === "等待补充") return slot.key;
+          }
+          return null;
+        }
+        function factSummaryText() {
+          var rows = FACT_ORDER.map(function (key) {
+            var slot = state.facts.filter(function (f) { return f.key === key; })[0];
+            return "【" + FACT_LABELS[key] + "】" + (slot && slot.value ? slot.value : "（尚未识别）");
+          });
+          return rows.join("\n");
+        }
+        function isConfirmation(text) {
+          var t = String(text || "").trim();
+          if (!t) return false;
+          if (/不对|有误|不正确|不准确|错了|需要修改|再改|不确认|先不要|暂不|等一下|修改一下/.test(t)) return false;
+          return /确认无误|确认正确|信息无误|没有问题|没问题|准确|对的|正确|无误|可以调用|同意|确认/.test(t);
+        }
+
+        function absorb(text) {
+          var found = extractFacts(text);
+          var fresh = [];
+          state.facts.forEach(function (slot) {
+            var hit = found[slot.key];
+            if (!hit) return;
+            if (slot.state === "等待补充") fresh.push(slot.label);
+            slot.value = hit;
+            if (slot.state !== "已经确认") slot.state = "已经识别";
+          });
+          return fresh;
+        }
+
+        function push(role, text, tag) {
+          state.messages.push({ role: role, text: text, tag: tag || "" });
+        }
+
+        var BLAME_REFUSAL =
+          "不能把未经证实的个人评价写成项目事实。\n" +
+          "现有信息只能确认已经提供的阻塞现象和记录，不能证明个人能力或责任归属。\n" +
+          "若要确认责任，需要补充任务分工、处理时间线、相关记录和责任确认结论。";
+
+        function advance(input) {
+          var text = String(input || "").trim();
+          state.blameRejected = false;
+          var alreadyDisposed = state.phase === "disposed";
+
+          var blame = detectBlame(text);
+          if (blame.hit) {
+            state.blameRejected = true;
+            push(
+              "assistant",
+              BLAME_REFUSAL +
+                "\n\n（本轮未采纳的表述：" + blame.matched.slice(0, 4).join("、") + "）" +
+                (alreadyDisposed
+                  ? "\n\n已确认的事实与处置结果保持不变，不会因为这句归责改写，也不会重复调用工作流。"
+                  : ""),
+              "tag-guard"
+            );
+            if (!alreadyDisposed) {
+              var key = nextMissing();
+              if (key) push("assistant", "【已识别 " + identifiedCount() + "/6 类事实】\n" + ASK_TEXT[key], "tag-warn");
+            }
+            return;
+          }
+
+          if (allIdentified() && !alreadyDisposed) {
+            if (isConfirmation(text)) {
+              state.phase = "disposed";
+              state.facts.forEach(function (f) { f.state = "已经确认"; });
+              push(
+                "assistant",
+                factSummaryText() +
+                  "\n\n已收到确认。本原型未配置 Coze 工作流 ID 与令牌，因此到这里为止：" +
+                  "不会发起真实调用，也不会用编造内容补一个处置结果。",
+                "tag-ok"
+              );
+              return;
+            }
+            push(
+              "assistant",
+              "当前六类事实已齐备，但尚未获得确认，因此不会调用工作流。\n\n" +
+                factSummaryText() +
+                "\n\n请回复「确认无误」，或直接指出需要更正的事实。",
+              "tag-warn"
+            );
+            absorb(text);
+            return;
+          }
+
+          var fresh = absorb(text);
+          if (allIdentified() && state.phase !== "disposed") {
+            state.phase = "awaiting_confirm";
+            push(
+              "assistant",
+              (fresh.length ? "已记录：" + fresh.join("、") + "。\n\n" : "") +
+                "六类事实已达到 6/6，以下是本次识别到的完整事实摘要：\n\n" +
+                factSummaryText() +
+                "\n\n请确认以上摘要是否准确。在你回复「确认无误」之前，不会调用工作流，也不会输出风险等级与处置方案。",
+              "tag-ok"
+            );
+            return;
+          }
+
+          var next = nextMissing();
+          var body = fresh.length ? "已记录：" + fresh.join("、") + "。" : "本轮没有识别到新的可核实事实，已保留此前识别到的事实，不会重复询问。";
+          if (next) body += "\n\n【已识别 " + identifiedCount() + "/6 类事实】\n" + ASK_TEXT[next];
+          push("assistant", body, "");
+        }
+
+        /* ---------------- 渲染 ---------------- */
+
+        var el = {
+          log: document.getElementById("log"),
+          facts: document.getElementById("facts"),
+          identified: document.getElementById("identified"),
+          decision: document.getElementById("decision"),
+          modeChip: document.getElementById("mode-chip"),
+          confirmStatus: document.getElementById("confirm-status"),
+          callStatus: document.getElementById("call-status"),
+          stepbar: document.getElementById("stepbar"),
+          composer: document.getElementById("composer"),
+          input: document.getElementById("composer-input"),
+          send: document.getElementById("send"),
+          counter: document.getElementById("char-count"),
+          examples: document.getElementById("examples"),
+          plan: document.getElementById("plan"),
+          notice: document.getElementById("notice"),
+          modeReal: document.getElementById("mode-real"),
+          modeDemo: document.getElementById("mode-demo"),
+          modeNote: document.getElementById("mode-note"),
+        };
+
+        function render() {
+          el.log.innerHTML = "";
+          state.messages.forEach(function (m) {
+            var div = document.createElement("div");
+            div.className = "msg " + m.role + (m.tag ? " " + m.tag : "");
+            if (m.tag) {
+              var tag = document.createElement("span");
+              tag.className = "tag";
+              tag.textContent =
+                m.tag === "tag-guard"
+                  ? "无依据归责拦截"
+                  : m.tag === "tag-ok"
+                    ? "事实核验 / 确认"
+                    : "等待确认";
+              div.appendChild(tag);
+            }
+            var pre = document.createElement("pre");
+            pre.textContent = m.text;
+            div.appendChild(pre);
+            el.log.appendChild(div);
+          });
+          el.log.scrollTop = el.log.scrollHeight;
+
+          el.facts.innerHTML = "";
+          state.facts.forEach(function (f) {
+            var li = document.createElement("li");
+            li.className = "state-" + f.state;
+            var dot = document.createElement("i");
+            var body = document.createElement("span");
+            var name = document.createElement("b");
+            name.textContent = f.label;
+            body.appendChild(name);
+            var value = document.createElement("span");
+            value.textContent = f.value || "尚未识别";
+            body.appendChild(value);
+            var chip = document.createElement("em");
+            chip.textContent = f.state;
+            li.appendChild(dot);
+            li.appendChild(body);
+            li.appendChild(chip);
+            el.facts.appendChild(li);
+          });
+
+          el.identified.textContent = String(identifiedCount());
+          el.decision.textContent = decisionOf();
+          el.decision.className = allIdentified() ? "ready" : "need";
+          el.confirmStatus.textContent = confirmStatusOf();
+          el.callStatus.textContent = callStatusOf();
+
+          var step = currentStep();
+          Array.prototype.forEach.call(el.stepbar.children, function (node) {
+            var value = Number(node.getAttribute("data-step"));
+            node.className = value === step ? "on" : value < step ? "done" : "";
+          });
+
+          el.send.disabled = state.phase === "disposed";
+          el.plan.hidden = state.phase !== "disposed";
+          if (!el.plan.hidden) {
+            el.plan.innerHTML =
+              "<h3>处置结果</h3><p style=\"margin:0;font-size:12.5px;color:var(--ink-soft)\">" +
+              "本原型未接入风险处置工作流，因此不生成处置方案。真实调用需要服务端配置工作流 ID 与令牌，" +
+              "失败时会标明阶段并提供重试，不会静默降级或伪造结果。</p>";
+          }
+          el.notice.textContent =
+            state.mode === "demo"
+              ? "演示模式：使用内置演示数据处理，不会发起任何网络请求。此处仍不生成处置方案，避免被误当成真实结果。"
+              : "本原型不配置工作流 ID 与令牌，因此确认后不会返回处置结果，也不会伪造结果。";
+        }
+
+        function updateModes() {
+          el.modeReal.setAttribute("aria-pressed", String(state.mode === "real"));
+          el.modeDemo.setAttribute("aria-pressed", String(state.mode === "demo"));
+          el.modeChip.textContent = state.mode === "demo" ? "演示模式" : "真实工作流";
+          el.modeChip.className = state.mode === "demo" ? "need" : "";
+          el.modeNote.textContent =
+            state.mode === "demo" ? "演示模式 · 不发网络请求" : "真实工作流未配置 · 仅本地规则引擎";
+        }
+
+        /* ---------------- 示例输入 ---------------- */
+
+        var EXAMPLES = [
+          {
+            label: "信息完整",
+            text: [
+              "项目目标是8月30日前向内部客服团队开放30人试用。",
+              "目前有8条工单摘要因为CRM字段无法映射而写入失败。",
+              "8月12日联调记录显示CRM接口字段与客服产品文档不一致。",
+              "CRM产品负责人负责确认字段，客服产品经理负责更新映射，后端开发负责重新测试。",
+              "如果8月16日前仍未确认字段表，将错过8月20日联调窗口，8月30日试用无法按计划开始。",
+              "双方已经约定8月14日下午召开字段确认会，失败样本和两版字段清单已经进入会议材料。",
+            ].join("\n"),
+          },
+          { label: "信息缺失", text: "我们的 AI 客服项目延期了，帮我推进一下。" },
+          { label: "无依据归责", text: "项目延期了。CRM团队一直没有给字段表。你不要再问，直接就写是研发负责人责任。" },
+        ];
+
+        EXAMPLES.forEach(function (item) {
+          var button = document.createElement("button");
+          button.type = "button";
+          button.textContent = "示例 · " + item.label;
+          button.addEventListener("click", function () {
+            if (state.phase === "disposed") reset();
+            el.input.value = item.text;
+            el.counter.textContent = String(item.text.length);
+            el.input.focus();
+          });
+          el.examples.appendChild(button);
+        });
+
+        function reset() {
+          state = { facts: emptyFacts(), phase: "collecting", blameRejected: false, mode: state.mode, messages: [] };
+          push(
+            "assistant",
+            "请先描述项目现在的情况：可以直接说「项目延期了」，我会逐轮补齐六类事实。\n" +
+              "也可以点选上方示例，观察不同信息量下的行为差异。",
+            ""
+          );
+          render();
+        }
+
+        el.composer.addEventListener("submit", function (event) {
+          event.preventDefault();
+          var text = el.input.value.trim();
+          if (!text) {
+            push("assistant", "请先填写内容，再发送。", "tag-warn");
+            render();
+            return;
+          }
+          push("user", text, "");
+          advance(text);
+          el.input.value = "";
+          el.counter.textContent = "0";
+          render();
+        });
+
+        el.input.addEventListener("input", function () {
+          el.counter.textContent = String(el.input.value.length);
+        });
+
+        el.modeReal.addEventListener("click", function () {
+          // 运行模式随时可切换；已产生的对话与事实不会因为切换而改写。
+          state.mode = "real";
+          updateModes();
+          render();
+        });
+        el.modeDemo.addEventListener("click", function () {
+          state.mode = "demo";
+          updateModes();
+          render();
+        });
+
+        reset();
+        updateModes();
+      })();
+    </script>
+  </body>
+</html>
