@@ -17,7 +17,7 @@ export const ticketRoutingProject: VibeProject = {
   userScenario: "高峰期工单积压，客服反复分类、定级，紧急问题难以及时入队。",
   productJudgment: "先把工单分对，再谈自动回复；VIP 与低置信结果交给人工。",
   validationGoal: "验证分类是否可用，以及异常工单能否可靠转人工。",
-  demoUrl: "/demos/ticket-routing.html",
+  demoUrl: "https://li-jiafu-ticket-demo.ggnb6666.chatgpt.site",
   cover: "",
   stages: {
     scenario: true,
@@ -184,6 +184,7 @@ export const ticketRoutingProject: VibeProject = {
   },
   demo: {
     kind: "ticket",
+    embedUrl: "/demos/ticket-routing.html",
     available: true,
     inputLabel: "工单内容",
     defaultInput: "登录时收不到验证码。",

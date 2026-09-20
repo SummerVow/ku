@@ -4,9 +4,21 @@ import {
   findVibeProject,
   findArtifact,
   projectStatus,
+  vibeProjects,
+  artifacts,
 } from "@/data/vibe-projects";
 import VibeDocumentViewer from "@/components/vibe/VibeDocumentViewer";
 type Props = { params: Promise<{ slug: string; document: string }> };
+
+/** 静态导出需要枚举 3 个案例 × 5 份文档，共 15 个地址。 */
+export function generateStaticParams() {
+  return vibeProjects.flatMap((project) =>
+    artifacts.map((artifact) => ({
+      slug: project.slug,
+      document: artifact.slug,
+    })),
+  );
+}
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, document } = await params;
   const project = findVibeProject(slug);

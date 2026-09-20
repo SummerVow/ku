@@ -1,8 +1,17 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { findVibeProject, projectStatus } from "@/data/vibe-projects";
+import {
+  findVibeProject,
+  projectStatus,
+  vibeProjects,
+} from "@/data/vibe-projects";
 import VibeProjectDetail from "@/components/vibe/VibeProjectDetail";
 type Props = { params: Promise<{ slug: string }> };
+
+/** 静态导出（GitHub Pages）需要枚举全部案例地址；旧别名地址在此模式下不再重定向。 */
+export function generateStaticParams() {
+  return vibeProjects.map((project) => ({ slug: project.slug }));
+}
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const project = findVibeProject((await params).slug);
   return project
