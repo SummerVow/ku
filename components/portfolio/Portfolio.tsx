@@ -50,7 +50,7 @@ export default function Portfolio() {
         跳到主要内容
       </a>
       <Navigation />
-      <main id="main">
+      <main id="main" className="portfolio-main">
         <Hero />
         <Education />
         <Experience />

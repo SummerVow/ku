@@ -71,7 +71,9 @@ export default function VibeProjectDetail({
         <header>
           <span>02 / TEARDOWN</span>
           <h2>产品拆解</h2>
-          <a href={`/vibe/${project.slug}/product-teardown`}>单独阅读 ↗</a>
+          <Link href={`/vibe/${project.slug}/product-teardown`}>
+            单独阅读 ↗
+          </Link>
         </header>
         <VibeContent project={project} document="product-teardown" />
       </section>
@@ -93,7 +95,9 @@ export default function VibeProjectDetail({
               0{i + 4} / {artifact.slug.toUpperCase()}
             </span>
             <h2>{artifact.label}</h2>
-            <a href={`/vibe/${project.slug}/${artifact.slug}`}>单独阅读 ↗</a>
+            <Link href={`/vibe/${project.slug}/${artifact.slug}`}>
+              单独阅读 ↗
+            </Link>
           </header>
           <VibeContent project={project} document={artifact.slug} />
         </section>
@@ -113,7 +117,9 @@ export default function VibeProjectDetail({
         <header>
           <span>08 / VALIDATION</span>
           <h2>一轮验证</h2>
-          <a href={`/vibe/${project.slug}/validation`}>单独阅读 ↗</a>
+          <Link href={`/vibe/${project.slug}/validation`}>
+            单独阅读 ↗
+          </Link>
         </header>
         <VibeContent project={project} document="validation" />
       </section>

@@ -1,7 +1,7 @@
+import Link from "next/link";
 import { projectStatus, type VibeProject } from "@/data/vibe-projects";
 import ArtifactIndex from "./ArtifactIndex";
 import VibeStageTrail from "./VibeStageTrail";
-import VibePreview from "./VibePreview";
 export function DemoLink({ project }: { project: VibeProject }) {
   return project.demoUrl ? (
     <a
@@ -41,7 +41,6 @@ export default function VibeProjectCard({
         <span>VIBE FILE / {project.index}</span>
         <small>{projectStatus(project)}</small>
       </header>
-      <VibePreview project={project} />
       <div className="vibe-card-body">
         <p className="vibe-kicker">{project.type}</p>
         <h3>
@@ -64,12 +63,12 @@ export default function VibeProjectCard({
         </div>
         <ArtifactIndex slug={project.slug} />
         <footer className="vibe-card-actions">
-          <a
+          <Link
             className="vibe-action vibe-action-primary"
             href={`/vibe/${project.slug}`}
           >
             查看完整案例 <span>↗</span>
-          </a>
+          </Link>
           <DemoLink project={project} />
         </footer>
       </div>

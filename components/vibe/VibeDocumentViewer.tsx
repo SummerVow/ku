@@ -8,6 +8,8 @@ import {
 import ArtifactIndex from "./ArtifactIndex";
 import VibeContent from "./VibeContent";
 import { DemoLink } from "./VibeProjectCard";
+// 站内链接统一使用 next/link：静态导出部署到 GitHub Pages 子路径时，
+// 只有 Link 会自动补上 basePath，原生 <a> 不会。
 export default function VibeDocumentViewer({
   project,
   document,
@@ -23,14 +25,14 @@ export default function VibeDocumentViewer({
       className={`vibe-page vibe-document-page vibe-${project.accent}`}
     >
       <div className="vibe-document-top">
-        <a className="vibe-action" href={`/vibe/${project.slug}`}>
+        <Link className="vibe-action" href={`/vibe/${project.slug}`}>
           ← 返回完整案例
-        </a>
-        <a className="vibe-action" href={`/vibe/${project.slug}#prototype`}>
+        </Link>
+        <Link className="vibe-action" href={`/vibe/${project.slug}#prototype`}>
           {project.demo.available === false
             ? "查看核心流程 ↗"
             : "体验本页原型 ↗"}
-        </a>
+        </Link>
         <DemoLink project={project} />
       </div>
       <div className="vibe-reader">
@@ -61,20 +63,20 @@ export default function VibeDocumentViewer({
           <VibeContent project={project} document={document} />
           <footer className="vibe-document-pager">
             {index > 0 ? (
-              <a href={`/vibe/${project.slug}/${artifacts[index - 1].slug}`}>
+              <Link href={`/vibe/${project.slug}/${artifacts[index - 1].slug}`}>
                 ← {artifacts[index - 1].label}
-              </a>
+              </Link>
             ) : (
-              <a href={`/vibe/${project.slug}`}>← 完整案例</a>
+              <Link href={`/vibe/${project.slug}`}>← 完整案例</Link>
             )}
             {index < artifacts.length - 1 ? (
-              <a href={`/vibe/${project.slug}/${artifacts[index + 1].slug}`}>
+              <Link href={`/vibe/${project.slug}/${artifacts[index + 1].slug}`}>
                 {artifacts[index + 1].label} →
-              </a>
+              </Link>
             ) : (
-              <a href={`/vibe/${project.slug}#prototype`}>
+              <Link href={`/vibe/${project.slug}#prototype`}>
                 {project.demo.available === false ? "查看流程 →" : "体验原型 →"}
-              </a>
+              </Link>
             )}
           </footer>
         </article>

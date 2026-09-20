@@ -48,6 +48,16 @@ export default function CompetitorTable({ project }: { project: VibeProject }) {
           </tbody>
         </table>
       </div>
+      {project.sources && (
+        <p className="vibe-note">
+          参考资料：{project.sources.map((source, index) => (
+            <span key={source.url}>
+              {index > 0 && " · "}
+              <a href={source.url} target="_blank" rel="noopener noreferrer">{source.title} ↗</a>
+            </span>
+          ))}
+        </p>
+      )}
     </>
   );
 }

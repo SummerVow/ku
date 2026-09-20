@@ -1,3 +1,5 @@
+import { asset } from "@/lib/asset";
+
 // 资料来源：用户提供的《李家福-1.pdf》（2026-09-17）。
 // 项目日期、现场截图、课程和爱好未提供，保留为空，不推断或编造。
 export const profile = {
@@ -12,8 +14,8 @@ export const profile = {
   phone: "19883507096",
   location: "2026 届 · 本科",
   status: "聚焦大模型应用、智能体与企业知识问答",
-  portrait: "/images/lijiafu-portrait.png",
-  resumeUrl: "/resume.pdf",
+  portrait: asset("/images/lijiafu-portrait.png"),
+  resumeUrl: asset("/resume.pdf"),
   available: "期待 AI 产品方向的新机会",
 };
 export const navigation = [
@@ -31,28 +33,13 @@ export const education = [
     major: "园林",
     school: "绍兴理工学院",
     abbr: "",
-    image: "",
+    image: "/images/campus-library.webp",
     caption: "从园林专业出发，走向 AI 产品实践。",
     courses: "",
     note: "LEARNING PATH / 2022 — 2026",
   },
 ];
 export const experience = [
-  {
-    period: "2026.03 — 2026.07",
-    company: "绍兴市携创科技有限公司",
-    role: "产品助理 · 实习",
-    title: "围绕真实对话，迭代 AI 客服",
-    description:
-      "承接 AI 客服产品需求分析与迭代优化，梳理用户反馈和对话日志，定位高频业务痛点。设计 Prompt 调优方案与知识库标准化更新机制，协同算法、运营团队完成评审与落地。",
-    result:
-      "持续开展产品验证与版本迭代，提升机器人首轮问题解决率，减少人工转接与运营成本。",
-    metrics: [{ value: "15%", label: "首轮问题解决率提升" }],
-    tags: ["AI 客服", "Prompt 调优", "知识库更新"],
-    image: "",
-    note: "从用户反馈到产品迭代",
-    place: "SHAOXING · 2026",
-  },
   {
     period: "2025.12 — 2026.02",
     company: "杭州中恒建筑有限公司",
@@ -70,7 +57,22 @@ export const experience = [
     image: "",
     note: "让需求评审、开发与交付连起来",
     place: "HANGZHOU · 2025 — 2026",
+  },  {
+    period: "2026.03 — 2026.07",
+    company: "绍兴市携创科技有限公司",
+    role: "产品助理 · 实习",
+    title: "围绕真实对话，迭代 AI 客服",
+    description:
+      "承接 AI 客服产品需求分析与迭代优化，梳理用户反馈和对话日志，定位高频业务痛点。设计 Prompt 调优方案与知识库标准化更新机制，协同算法、运营团队完成评审与落地。",
+    result:
+      "持续开展产品验证与版本迭代，提升机器人首轮问题解决率，减少人工转接与运营成本。",
+    metrics: [{ value: "15%", label: "首轮问题解决率提升" }],
+    tags: ["AI 客服", "Prompt 调优", "知识库更新"],
+    image: "",
+    note: "从用户反馈到产品迭代",
+    place: "SHAOXING · 2026",
   },
+
 ];
 export type ProjectPanel = {
   title: string;

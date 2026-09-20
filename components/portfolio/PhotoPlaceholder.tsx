@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import { asset } from "@/lib/asset";
 export default function PhotoPlaceholder({
   label,
   index = "01",
@@ -13,7 +14,7 @@ export default function PhotoPlaceholder({
   return image ? (
     <img
       className="archive-photo"
-      src={image}
+      src={asset(image)}
       alt={alt || label}
       loading="lazy"
       width="800"

@@ -1,4 +1,14 @@
 /* Vibe Product Lab: scoped archive system, shared by index and document routes. */
+.vibe-newsroom-preview { height: calc(100% - 23px); padding: 15px 12px; background: #292923; color: #f8f3e8; }
+.vibe-newsroom-preview > p { font-size: clamp(12px, 1.4vw, 20px); font-family: "Songti SC", serif; margin-bottom: 12px; }
+.vibe-newsroom-preview > small { display: block; font-size: 8px; color: #d1c7b9; margin-top: 10px; }
+.vibe-newsroom-columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.vibe-newsroom-columns > div { background: #f8f3e8; color: #292923; padding: 10px 6px; min-width: 0; }
+.vibe-newsroom-columns small { font-size: 6px; color: #806f5d; display: block; }
+.vibe-newsroom-columns b { font-size: 11px; display: block; margin: 7px 0 3px; }
+.vibe-newsroom-columns span { display: block; font-size: 7px; color: #7c756b; }
+.vibe-newsroom-columns i { display: block; height: 2px; margin-top: 6px; background: #ddd5c8; }
+.vibe-newsroom-columns i:last-child { width: 65%; }
 .vibe-live-demo {
   display: block;
   width: 100%;

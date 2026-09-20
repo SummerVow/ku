@@ -1,5 +1,6 @@
 import { ArrowDown, ArrowUpRight, Download, Plus } from "lucide-react";
 import { profile } from "@/data/portfolio";
+import { asset } from "@/lib/asset";
 export default function Hero() {
   return (
     <section id="about" className="hero section-shell">
@@ -54,7 +55,7 @@ export default function Hero() {
           {profile.portrait ? (
             <>
               <img
-                src={profile.portrait}
+                src={asset(profile.portrait)}
                 alt={`${profile.name}的个人照片`}
                 width="420"
                 height="520"

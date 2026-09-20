@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
 import type { VibeProject } from "@/data/vibe-projects";
+import { asset } from "@/lib/asset";
 export default function VibeDemoShell({ project }: { project: VibeProject }) {
-  if (project.demo.kind === "ticket" && project.demoUrl) {
+  if (project.demo.embedUrl && project.demo.available !== false) {
     return (
       <div className={`vibe-demo vibe-${project.accent}`}>
         <div className="vibe-demo-header">
@@ -19,10 +20,11 @@ export default function VibeDemoShell({ project }: { project: VibeProject }) {
         <p className="vibe-demo-notice">{project.demo.response}</p>
         <iframe
           className="vibe-live-demo"
-          src={project.demoUrl}
+          src={project.demo.embedUrl ? asset(project.demo.embedUrl) : project.demoUrl}
           title={`${project.name}交互 Demo`}
           loading="lazy"
-          sandbox="allow-scripts allow-forms"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-downloads allow-popups allow-popups-to-escape-sandbox"
+          allow="clipboard-write"
           referrerPolicy="no-referrer"
         />
       </div>

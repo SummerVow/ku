@@ -1,4 +1,5 @@
 import type { VibeProject } from "@/data/vibe-projects";
+import { asset } from "@/lib/asset";
 export default function VibePreview({ project }: { project: VibeProject }) {
   if (project.cover)
     return (
@@ -6,7 +7,7 @@ export default function VibePreview({ project }: { project: VibeProject }) {
         {/* Native image keeps optional local assets portable without an image service. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={project.cover}
+          src={asset(project.cover)}
           alt={`${project.name}项目预览`}
           loading="lazy"
           width="800"
@@ -42,6 +43,22 @@ export default function VibePreview({ project }: { project: VibeProject }) {
               <span>02 · 引用原文</span>
               <b>查看依据 ↗</b>
             </div>
+          </div>
+        )}
+        {project.demo.kind === "newsroom" && (
+          <div className="vibe-newsroom-preview">
+            <p>一条新闻，三种回响。</p>
+            <div className="vibe-newsroom-columns">
+              {project.demo.options.map((option, index) => (
+                <div key={option}>
+                  <small>0{index + 1} / DRAFT</small>
+                  <b>{option.split(" · ")[0]}</b>
+                  <span>{option.split(" · ")[1]}</span>
+                  <i /><i /><i />
+                </div>
+              ))}
+            </div>
+            <small>同源内容 · 分平台审校</small>
           </div>
         )}
         {project.demo.kind === "creation" && (

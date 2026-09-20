@@ -1,7 +1,7 @@
 import { ArrowUpRight, Quote } from "lucide-react";
 import { experience } from "@/data/portfolio";
 import SectionHeading from "./SectionHeading";
-import PhotoPlaceholder from "./PhotoPlaceholder";
+import FieldNote from "./FieldNote";
 export default function Experience() {
   return (
     <section className="experience section-shell chapter" id="experience">
@@ -53,12 +53,7 @@ export default function Experience() {
               <figure className="polaroid">
                 <span className="photo-tape" />
                 <div className={`field-photo field-photo-${index}`}>
-                  <PhotoPlaceholder
-                    label="留给工作现场的一帧"
-                    index={`0${index + 1}`}
-                    image={item.image}
-                    alt={item.note}
-                  />
+                  <FieldNote index={index} label={item.note} />
                 </div>
                 <figcaption>
                   {item.note}
@@ -79,9 +74,6 @@ export default function Experience() {
           </article>
         ))}
       </div>
-      <p className="sample-note">
-        * 经历与成果依据个人简历整理，现场照片待补充。
-      </p>
     </section>
   );
 }

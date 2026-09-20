@@ -35,7 +35,6 @@ export default function ProjectPreview({
             </span>
           ))}
         </div>
-        <small className="case-image-note">内容来自简历 · 项目截图待补充</small>
       </div>
     </div>
   );
