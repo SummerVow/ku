@@ -14,7 +14,9 @@ export const profile = {
   phone: "19883507096",
   location: "2026 届 · 本科",
   status: "聚焦大模型应用、智能体与企业知识问答",
-  portrait: asset("/images/lijiafu-portrait.png"),
+  // 只有 portrait 由 Hero 的 <img> 直接渲染，那里已经调用 asset()，
+  // 因此这里保留原始路径，避免出现 /ku/ku/... 的双重前缀。
+  portrait: "/images/lijiafu-portrait.png",
   resumeUrl: asset("/resume.pdf"),
   available: "期待 AI 产品方向的新机会",
 };
