@@ -85,7 +85,7 @@ pnpm start
 
 把截图放进 `public/images/`，把 `cover` 改为 `/images/文件名.webp`。留空时显示 CSS 构建的产品界面示意；图片懒加载、固定宽高比。建议截图比例约 1.48:1。
 
-`demoUrl` 留空会显示禁用的“Demo 待接入”和说明，没有 `#` 空链接。填入完整可信的 `https://` 地址后，外部 Demo 在新标签页打开。外部地址与详情页里的本地前端原型分别管理。
+`demoUrl` 留空会显示禁用的“Demo 待接入”和说明，没有 `#` 空链接。填入完整可信的 `https://` 地址后，外部 Demo 在新标签页打开；填入站内路径（如 `/demos/midnight-press/index.html`）则在新标签页打开站内副本，组件用 `asset()` 补 `basePath`。外部地址与详情页里的本地前端原型分别管理。
 
 `demo.kind` 选择 `search`、`creation` 或 `agent`；其余字段配置输入标签、默认文字、提示内容、选项和任务步骤。三个原型支持空输入提示、结果反馈与重置。搜索原型可查看证据并记录人工查看状态；生成原型保留初稿并比较结构化修改；Agent 在倒数第二步暂停确认，支持接管与取消。它们不调用 AI、不上传输入、不保存业务数据，也没有埋点服务。切换为不同业务机制的真实 Demo 时，优先填入外部地址；若要新增第四种内置交互机制，再扩展 `VibeDemoShell`。
 
@@ -100,11 +100,11 @@ pnpm start
 
 `data/vibe-midnight-press.ts` 集中存放项目介绍与五份简版文档。案例地址为 `/vibe/midnight-press`，成果物地址在后面附加 `product-teardown`、`competitor-analysis`、`requirements`、`prd`、`validation`。旧的 `/vibe/controlled-generation` 及文档地址自动跳转到新项目。
 
-独立展示地址：https://li-jiafu-midnight-press.ggnb6666.chatgpt.site（目前仅本人可访问）。本地案例与嵌入预览仍通过作品集一键启动使用。
+独立展示地址 https://li-jiafu-midnight-press.ggnb6666.chatgpt.site 目前带 ChatGPT 登录门禁（未登录请求返回 401），门禁在托管平台侧，改代码关不掉。因此“体验 Demo”不再指向它，改为打开站内免登录副本 `/demos/midnight-press/index.html`；日后若在 ChatGPT 侧把该站点设为公开，可把 `demoUrl` 换回线上地址。本地案例与嵌入预览仍通过作品集一键启动使用。
 
 文档依据 `F:\ChatGPT\项目\midnight-press` 的实现与 `VERIFICATION.md` 整理；竞品页附官方资料链接。技术记录与产品效果分开陈述：历史测试通过不等于真实生成链路或用户价值已验证。补充真实验证后，更新 `validation`、`iteration` 与 `stages.validation`。
 
-原项目保持原样。作品集展示版位于 `.sites-runtime/midnight-press-site`，使用原 UI、样稿与配图，只保留前端交互，不复制环境文件、服务端密钥或接口。`public/demos/midnight-press/` 保存构建产物，`demo.embedUrl` 指向其中的 `index.html`；`demoUrl` 用于独立线上地址。展示版支持样稿切换、独立版本编辑、复制与导出，视频部分是分镜静帧。自定义原稿与媒体制作会说明真实服务尚未接入，不会伪造生成结果。
+原项目保持原样。作品集展示版位于 `.sites-runtime/midnight-press-site`，使用原 UI、样稿与配图，只保留前端交互，不复制环境文件、服务端密钥或接口。`public/demos/midnight-press/` 保存构建产物，`demo.embedUrl` 与 `demoUrl` 都指向其中的 `index.html`（线上独立站有登录门禁，见上）。展示版支持样稿切换、独立版本编辑、复制与导出，视频部分是分镜静帧。自定义原稿与媒体制作会说明真实服务尚未接入，不会伪造生成结果。
 
 修改展示版后，在独立目录执行 `pnpm typecheck` 和 `pnpm build`，将 `out/` 完整复制到 `public/demos/midnight-press/`，再更新同一个独立线上站点。原项目真实联调通过后，可将 `demoUrl` 替换为真实服务地址，按需更新或移除 `demo.embedUrl`。请保留独立目录中的 `.openai/hosting.json`，避免重复创建站点。
 

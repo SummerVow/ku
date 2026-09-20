@@ -10,7 +10,7 @@ export default function VibeDemoShell({ project }: { project: VibeProject }) {
           <span>LIVE DEMO / {project.index}</span>
           <a
             className="vibe-action"
-            href={project.demoUrl}
+            href={asset(project.demoUrl)}
             target="_blank"
             rel="noopener noreferrer"
           >

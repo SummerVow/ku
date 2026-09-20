@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { projectStatus, type VibeProject } from "@/data/vibe-projects";
+import { asset } from "@/lib/asset";
 import ArtifactIndex from "./ArtifactIndex";
 import VibeStageTrail from "./VibeStageTrail";
 export function DemoLink({ project }: { project: VibeProject }) {
   return project.demoUrl ? (
     <a
       className="vibe-action"
-      href={project.demoUrl}
+      href={asset(project.demoUrl)}
       target="_blank"
       rel="noopener noreferrer"
     >

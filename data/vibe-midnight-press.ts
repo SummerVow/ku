@@ -16,7 +16,11 @@ export const midnightPressProject: VibeProject = {
   userScenario: "同一条新闻要发多个平台，运营反复改文案、找配图、写分镜。",
   productJudgment: "共用事实，分平台表达；先审校文案，再按需制作素材。",
   validationGoal: "验证多平台草稿与单项重试能否减少改稿、搬运和返工。",
-  demoUrl: "https://li-jiafu-midnight-press.ggnb6666.chatgpt.site",
+  // chatgpt.site 独立站默认带 ChatGPT 登录门禁，未登录请求返回 401，代码侧关不掉。
+  // 这里指向站内免登录副本：public/demos 会被任何部署一起带上。
+  // 若日后在 ChatGPT 侧把线上站点设为公开，可换回：
+  // https://li-jiafu-midnight-press.ggnb6666.chatgpt.site
+  demoUrl: "/demos/midnight-press/index.html",
   stages: { scenario: true, requirements: true, prd: true, demo: true, validation: false },
   overview: {
     user: "需要兼顾微博、小红书和短视频的内容运营。",

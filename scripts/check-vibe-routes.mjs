@@ -56,7 +56,9 @@ for (const slug of projects) {
       if (!suffix) assert.match(html, /src="\/demos\/ticket-routing\.html"/);
       assert.doesNotMatch(html, /Demo 待接入/);
     } else if (slug === "midnight-press") {
-      assert.ok(html.includes('href="https://li-jiafu-midnight-press.ggnb6666.chatgpt.site"'));
+      // demoUrl 指向站内免登录副本：线上独立站的 ChatGPT 登录门禁不能当入口。
+      assert.ok(html.includes('href="/demos/midnight-press/index.html"'));
+      assert.doesNotMatch(html, /chatgpt\.site/);
       assert.match(html, /午夜编辑室/);
       assert.doesNotMatch(html, /Demo 待接入/);
       if (!suffix) {
