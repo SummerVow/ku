@@ -7,8 +7,6 @@
 // 高度约束：面板被限制在 .field-photo 的 228px（移动端 196px）以内，
 // 超出会被裁掉，因此这里只保留能在两行内说明完的内容。
 type FieldNoteProps = {
-  /** 现场条目序号，用于选择对应面板 */
-  index: number;
   /** 该段经历的现场说明，兜底时使用 */
   label: string;
 };
@@ -102,9 +100,9 @@ function ShaoxingNote() {
   );
 }
 
-export default function FieldNote({ index, label }: FieldNoteProps) {
-  if (index === 0) return <HangzhouNote />;
-  if (index === 1) return <ShaoxingNote />;
+export default function FieldNote({ label }: FieldNoteProps) {
+  if (label === "让需求评审、开发与交付连起来") return <HangzhouNote />;
+  if (label === "从用户反馈到产品迭代") return <ShaoxingNote />;
   return (
     <div className="field-doc">
       <div className="field-doc-head">

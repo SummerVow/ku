@@ -43,23 +43,6 @@ export const education = [
 ];
 export const experience = [
   {
-    period: "2025.12 — 2026.02",
-    company: "杭州中恒建筑有限公司",
-    role: "产品助理 · 实习",
-    title: "把一线流程痛点，转化为产品优化",
-    description:
-      "负责内部项目管理系统的需求调研与业务梳理，访谈一线业务人员，对齐真实使用场景。独立输出完整 PRD，联动设计、研发推进需求评审、开发与上线交付，并沉淀用户反馈报告。",
-    result:
-      "跟进版本 A/B 测试，优化任务分配逻辑，提升项目任务流转效率，为后续版本规划提供依据。",
-    metrics: [
-      { value: "20%", label: "项目任务流转效率提升" },
-      { value: "3 份", label: "独立输出完整 PRD" },
-    ],
-    tags: ["需求调研", "PRD", "A/B 测试"],
-    image: "",
-    note: "让需求评审、开发与交付连起来",
-    place: "HANGZHOU · 2025 — 2026",
-  },  {
     period: "2026.03 — 2026.07",
     company: "绍兴市携创科技有限公司",
     role: "产品助理 · 实习",

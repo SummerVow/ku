@@ -53,7 +53,7 @@ export default function Experience() {
               <figure className="polaroid">
                 <span className="photo-tape" />
                 <div className={`field-photo field-photo-${index}`}>
-                  <FieldNote index={index} label={item.note} />
+                  <FieldNote label={item.note} />
                 </div>
                 <figcaption>
                   {item.note}
